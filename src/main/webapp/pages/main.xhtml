@@ -1,0 +1,123 @@
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<!-- the f:view above prevents an erroneous <html> within <body> coming from portal. -->
+	<!-- <h:head /> and <h:body> in the following are always needed otherwise JSF Facelets won't work -->
+	<h:head />
+
+	<h:body>
+		<h:outputStylesheet library="css" name="mail.css" />
+
+
+
+		<rich:panel id="wrapperMail" styleClass="wrapperMail">
+
+			<rich:panel header="Login " id="mailloginpanel"
+				styleClass="loginPanel"
+				rendered="#{mailController.connected == false}">
+				<h:form id="loginForm"
+					rendered="#{mailController.connected == false}">
+					<span class="title">Instant <h:outputText value="Mail"
+							style="color: #99CC00" /></span>
+					<br />
+
+
+					<table>
+						<tr>
+							<td><h:outputLabel value="User name" /></td>
+							<td><h:inputText value="#{mailController.userName}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Password" for="pass" /></td>
+							<td><h:inputSecret id="pass"
+									value="#{mailController.password}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Mail" for="mailSelect" /></td>
+							<td><rich:select id="mailSelect"
+									value="#{mailController.selectedConfiguration}">
+									<a4j:ajax event="selectitem" render="mailloginpanel" />
+
+									<f:selectItems value="#{mailController.configurations}" />
+
+								</rich:select></td>
+						</tr>
+						<a4j:outputPanel
+							rendered="#{mailController.selectedConfiguration == 'OTHER' }">
+							<tr>
+								<td><h:outputLabel value="Pop3 / IMAP server"
+										for="popServer" /></td>
+								<td><h:inputText id="popServer"
+										value="#{mailController.imapPopUrl}" /></td>
+							</tr>
+						</a4j:outputPanel>
+
+					</table>
+					<h:commandButton value="Sign IN" type="submit"
+						onclick="#{rich:element('loadingImage')}.show()"
+						action="#{mailController.connect()}" />
+					<rich:messages style="color:red" />
+
+					<h:graphicImage id="loadingImage" value="images/loader.gif"
+						style="display:none; margin: auto;" />
+				</h:form>
+			</rich:panel>
+
+<rich:panel rendered="#{mailController.connected}">
+
+
+<h:panelGrid columns="2">
+<h:form>
+<h:commandButton action="#{mailController.setView(2)}" value="New Message" render="mportletContent" />
+<rich:panel id="mailDirs" styleClass="mailFolders">
+					
+					
+						<rich:panelMenu>
+							<a4j:repeat value="#{mailController.folders()}" var="folder">
+								<rich:menuItem label="#{folder.split('__')[1]}">
+								</rich:menuItem>
+							</a4j:repeat>
+						</rich:panelMenu>
+					
+				</rich:panel>
+		</h:form>
+
+
+ <a4j:outputPanel id="mportletContent">
+		<rich:panel id="newMessage" styleClass="mailNewMessage" rendered="#{mailController.view==2}">
+		<h:form>
+		<table><tr>
+			<td> For</td>
+			<td > <h:inputTextarea value="#{mailController.recipients}" style="width: 100% "/> </td>
+			</tr>
+			<tr>
+				<td> Subject</td>
+				
+			<td > <h:inputText value="#{mailController.subject}" style="width: 100% "/> </td>
+				</tr>
+		</table>
+		<rich:editor width="100%" value="#{mailController.messageText}"/>
+		<rich:select value="#{mailController.selectedAccounts}">
+			<f:selectItems value="#{mailController.accounts}"></f:selectItems>
+		</rich:select>
+		<h:commandButton value="Send" action="#{mailController.send()}" />
+		</h:form>
+		</rich:panel>
+		<rich:panel id="messages" rendered="#{mailController.view==0}">
+		</rich:panel>
+		</a4j:outputPanel>
+
+
+</h:panelGrid>
+<h:form>
+	<h:commandButton action="#{mailController.logout()}" value="logout" />
+	</h:form>
+		</rich:panel>
+		
+			</rich:panel>
+	</h:body>
+</f:view>

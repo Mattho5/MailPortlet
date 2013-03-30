@@ -1,0 +1,45 @@
+@CHARSET "UTF-8";
+
+.wrapperMail {
+	background-color: white;
+	
+	
+	border-radius: 15px;
+}
+
+
+.rf-p-hdr, .rf-pp-hdr {
+	border-radius:8px;
+	border: none;
+	color: grey;
+	background-color:  #F0F0F0  !important;
+	background-image: none !important;
+}
+
+rf-p {
+	background-color: white !important;
+}
+
+/*==========================================================*/
+.loginPanel {
+	width: 300px;
+	float: center;
+	background-color: white;
+	margin: auto;
+	border-radius: 8px;
+	-moz-box-shadow: 2px 2px 2px #A0A0A0;
+-webkit-box-shadow: 2px 2px 2px #A0A0A0 ;
+box-shadow: 2px 2px 2px #A0A0A0 ;
+}
+.mailFolders {
+	background-color: white;
+	width: 200px;
+	height: 420px;
+	overflow: auto;
+
+	}
+	
+.mailNewMessage {
+	width: 100%;
+	height: 100%;
+	}
