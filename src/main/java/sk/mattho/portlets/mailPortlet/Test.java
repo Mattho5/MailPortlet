@@ -1,6 +1,9 @@
 package sk.mattho.portlets.mailPortlet;
 
 
+import java.util.List;
+
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import sk.mattho.portlets.mailPortlet.mail.GenericMail;
@@ -10,24 +13,37 @@ import sk.mattho.portlets.mailPortlet.mail.MailConfigurations;
 public class Test {
 		 
 		 public static void main(String args[]) {
-			 MailConfigurations m= MailConfigurations.YAHOO;
+			 MailConfigurations m= MailConfigurations.GMAIL;
 			 GenericMail mail= new GenericMail();
 			 mail.setImapPopServerUrl(m.getImapPopUrl());
 			 mail.setSmtpServerUrl(m.getSmtpUrl());
-			 mail.setUserName("mattho5@yahoo.com");
-			 mail.setPassword("mailportlet123***");
+	
 			 mail.setSSL(m.isSsl());
 			 mail.setSmtpPort(m.getSmtpPort());
 			 mail.setPomImapPort(m.getImapPort());
-			 try {
-				mail.connect();
-			} catch (MessagingException e) {
-				// TODO Auto-generated catch block
-				System.out.println("sprava"+ e.getMessage());
-			}
-			 mail.getFolders();
-			 mail.sendMessage("mattho5@yahoo.com", "<h2>TAK TOTO JE TESTOVACIA SPRAVA</h2>" +
-			 		"<p>what the <strong>fuck</strong> tertre</p>","test");
+			
+				try {
+					mail.connect();
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			//	List<Message> ms= mail.getMessages("inbox");
+				//for(int i=0;i<10;i++){
+				//	System.out.println(ms.get(i).getFrom()[0].toString()+" Subject"+" "+ms.get(i).getSubject());
+					//System.out.println("====================");
+				//}
+		//	} catch (MessagingException e) {
+			//	// TODO Auto-generated catch block
+			//	System.out.println("sprava"+ e.getMessage());
+			//}
+				List<String> folders=mail.getFolders();
+				for(String s:folders)
+					System.out.println(s);
+				
+	//		 mail.getFolders();
+	//	 mail.sendMessage("mattho5@yahoo.com", "<h2>TAK TOTO JE TESTOVACIA SPRAVA</h2>" +
+		//	 		"<p>what the <strong>fuck</strong> tertre</p>","test");
 			 mail.disconnect();
 			 
 		/* Properties props = System.getProperties();
@@ -108,5 +124,8 @@ public class Test {
 		 }*/
 		 }
 		 
-		
 }
+
+		 
+		
+

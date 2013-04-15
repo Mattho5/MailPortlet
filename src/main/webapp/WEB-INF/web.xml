@@ -45,11 +45,18 @@
     <param-name>org.richfaces.skin</param-name>
     <param-value>emeraldTown</param-value>
   </context-param>
+  
   <context-param>
     <description>See http://docs.jboss.org/richfaces/latest_4_X/Developer_Guide/en-US/html/chap-Developer_Guide-Advanced_features.html</description>
     <param-name>org.richfaces.resourceOptimization.enabled</param-name>
     <param-value>true</param-value>
   </context-param>
+  <context-param>
+  <param-name>org.richfaces.builtin.sort.enabled</param-name>
+  <param-value>true</param-value>
+  </context-param>
+  
+   
   <servlet>
     <servlet-name>Push Servlet</servlet-name>
     <servlet-class>org.richfaces.webapp.PushServlet</servlet-class>

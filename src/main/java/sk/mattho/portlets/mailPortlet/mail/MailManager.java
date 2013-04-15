@@ -3,15 +3,18 @@ package sk.mattho.portlets.mailPortlet.mail;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 public class MailManager implements Serializable {
 
 	private List<GenericMail> mailBoxList;
 	private List<String> folders;
+	private Map<String,String> adressbook;
 	
 	@PostConstruct
 	private void init(){
@@ -99,7 +102,18 @@ public class MailManager implements Serializable {
 		this.folders = folders;
 	}
 	
-	public List<String> getMails(){
+	public List<Message> getMessages(String folderP){
+		String account=folderP.split(GenericMail.SEPARATOR)[0];
+		String folder=folderP.split(GenericMail.SEPARATOR)[1];
+		GenericMail m= getMailAccount(account);
+		if(m!=null){
+			System.out.println("returning messges: ");
+			return m.getMessages(folder);
+		}
+		else return null;
+	}
+	
+	public List<String> getMailAccounts(){
 		List<String> temp= new ArrayList<String>();
 		for(GenericMail m:this.mailBoxList)
 			temp.add(m.getUserName());

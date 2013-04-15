@@ -1,15 +1,20 @@
 package sk.mattho.portlets.mailPortlet.Controllers;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Flags.Flag;
 
 import sk.mattho.portlets.mailPortlet.mail.MailConfigurations;
 import sk.mattho.portlets.mailPortlet.mail.MailManager;
@@ -33,12 +38,16 @@ private int smtpPort;
 private String userName;
 private String password;
 private MailConfigurations selectedConfiguration;
+private String currentFolder;
 
 private String messageText;
 private String subject;
 private String recipients;
 
 private String selectedAccounts;
+private Message actualMessage;
+private List<Message> folderMessages;
+
 
 
 
@@ -74,11 +83,25 @@ public void init(){
 }
 
 
+private void messagesListRefresh(){
+ this.folderMessages= manager.getMessages(currentFolder);
+}
+
+public void showList(){
+	this.view=0;
+//	this.messagesListRefresh();
+}
+public void deleteMessage(Message m) throws MessagingException{
+	//m.getFlags().add(Flag.DELETED);
+	m.setFlag(Flag.DELETED, true);
+	this.messagesListRefresh();
+	
+}
 public void  connect(){
 	if(this.selectedConfiguration!=MailConfigurations.OTHER){
 	try {
 		this.connected= this.manager.addMailAccount(userName, password, selectedConfiguration);
-		this.selectedAccounts=this.manager.getMails().get(0);
+		this.selectedAccounts=this.manager.getMailAccounts().get(0);
 	} catch (MessagingException e) {
 		// TODO Auto-generated catch block
 		FacesContext.getCurrentInstance().addMessage(null,
@@ -214,6 +237,42 @@ public void setRecipients(String recipients) {
 }
 
 public List<String> getAccounts(){
-	return this.manager.getMails();
+	return this.manager.getMailAccounts();
 }
+
+
+public Message getActualMessage() {
+	return actualMessage;
+}
+
+
+public void setActualMessage(Message actualMessage) {
+	try {
+		System.out.println("Setting CM "+actualMessage.getFrom()[0].toString());
+		this.view=1;
+		actualMessage.setFlag(Flag.SEEN,true);
+	} catch (MessagingException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	this.actualMessage = actualMessage;
+}
+
+
+public List<Message> getFolderMessages() {
+	return folderMessages;
+}
+
+public void readMessagesFromFolder(String folder){
+	this.folderMessages=this.manager.getMessages(folder);
+	//g
+	this.currentFolder=folder;
+	this.actualMessage=null;
+	this.view=0;
+}
+@PreDestroy
+public void disconnect(){
+	this.manager.disconnect();
+}
+
 }
