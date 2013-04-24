@@ -171,7 +171,11 @@ public class MessageDetails {
 
 		return null;
 	}
-
+	public boolean isStar(Message m) throws MessagingException{
+		if(m.getFlags().contains(Flag.FLAGGED))
+			return true;
+		return false;
+	}
 	private void findAttachment(Multipart multipart, List<String> list)
 			throws MessagingException, IOException {
 		for (int i = 0; i < multipart.getCount(); i++) {

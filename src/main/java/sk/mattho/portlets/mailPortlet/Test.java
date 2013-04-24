@@ -6,7 +6,7 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import sk.mattho.portlets.mailPortlet.mail.GenericMail;
+import sk.mattho.portlets.mailPortlet.mail.MailAccount;
 import sk.mattho.portlets.mailPortlet.mail.MailConfigurations;
 
 
@@ -14,13 +14,13 @@ public class Test {
 		 
 		 public static void main(String args[]) {
 			 MailConfigurations m= MailConfigurations.GMAIL;
-			 GenericMail mail= new GenericMail();
-			 mail.setImapPopServerUrl(m.getImapPopUrl());
+			 MailAccount mail= new MailAccount();
+			 mail.setImapServerUrl(m.getImapPopUrl());
 			 mail.setSmtpServerUrl(m.getSmtpUrl());
 	
 			 mail.setSSL(m.isSsl());
 			 mail.setSmtpPort(m.getSmtpPort());
-			 mail.setPomImapPort(m.getImapPort());
+			 mail.setImapPort(m.getImapPort());
 			
 				try {
 					mail.connect();

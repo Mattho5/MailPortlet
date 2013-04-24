@@ -14,8 +14,26 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  -->
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
-
-   Edit Mode
-</ui:composition>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<!-- the f:view above prevents an erroneous <html> within <body> coming from portal. -->
+	<!-- <h:head /> and <h:body> in the following are always needed otherwise JSF Facelets won't work -->
+	<h:head />
+<h:body>
+		<h:outputStylesheet library="css" name="mail.css" />
+		<rich:panel id="wrapperMail" styleClass="wrapperMail">
+		<rich:panel styleClass="loginPanel">
+   <span class="mailTitle">Instant <h:outputText value="Mail"
+							style="color: #99CC00" /></span>
+							
+					<br />
+					<h:outputText value="You are not singed in" rendered="#{!mailController.connected}"/>
+					<h:outputText value="HI" rendered="#{mailController.connected}"/>
+					</rich:panel>
+					</rich:panel>
+					</h:body>
+</f:view>

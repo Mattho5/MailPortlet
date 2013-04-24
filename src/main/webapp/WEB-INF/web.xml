@@ -51,11 +51,6 @@
     <param-name>org.richfaces.resourceOptimization.enabled</param-name>
     <param-value>true</param-value>
   </context-param>
-  <context-param>
-  <param-name>org.richfaces.builtin.sort.enabled</param-name>
-  <param-value>true</param-value>
-  </context-param>
-  
    
   <servlet>
     <servlet-name>Push Servlet</servlet-name>

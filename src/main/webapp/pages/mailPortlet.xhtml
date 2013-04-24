@@ -1,0 +1,275 @@
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+	<!-- the f:view above prevents an erroneous <html> within <body> coming from portal. -->
+	<!-- <h:head /> and <h:body> in the following are always needed otherwise JSF Facelets won't work -->
+	<h:head />
+
+	<h:body>
+		<h:outputStylesheet library="css" name="mail.css" />
+
+
+
+		<rich:panel id="wrapperMail" styleClass="wrapperMail">
+
+			<rich:panel header="Login " id="mailloginpanel"
+				styleClass="loginPanel"
+				rendered="#{mailController.connected == false}">
+				<h:form id="loginForm"
+					rendered="#{mailController.connected == false}">
+					<span class="mailTitle">Instant <h:outputText value="Mail"
+							style="color: #99CC00" /></span>
+					<br />
+
+
+					<table>
+						<tr>
+							<td><h:outputLabel value="User name" /></td>
+							<td><h:inputText value="#{mailController.userName}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Password" for="pass" /></td>
+							<td><h:inputSecret id="pass"
+									value="#{mailController.password}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Mail" for="mailSelect" /></td>
+							<td><rich:select id="mailSelect"
+									value="#{mailController.selectedConfiguration}">
+									<a4j:ajax event="selectitem" render="mailloginpanel" />
+
+									<f:selectItems value="#{mailController.configurations}" />
+
+								</rich:select></td>
+						</tr>
+						<a4j:outputPanel
+							rendered="#{mailController.selectedConfiguration == 'OTHER' }">
+							<tr>
+								<td><h:outputLabel value="Pop3 / IMAP server"
+										for="popServer" /></td>
+								<td><h:inputText id="popServer"
+										value="#{mailController.imapPopUrl}" /></td>
+							</tr>
+						</a4j:outputPanel>
+
+					</table>
+					<h:commandButton value="Sign IN" type="submit" styleClass="button"
+						onclick="#{rich:component('loadingPanel')}.show();"
+						action="#{mailController.connect()}" />
+					<rich:messages style="color:red" />
+
+					<h:graphicImage id="loadingImage" value="images/loader.gif"
+						style="display:none; margin: auto;" />
+				</h:form>
+			</rich:panel>
+	<h:form>
+	<a4j:push
+					address="#{mailController.userIdentifier}newmessage@mailService"
+					onerror="alert(event.rf.data)">
+					<a4j:ajax event="dataavailable" render="mailList" />
+				</a4j:push>
+				
+				<h:outputText id="date" value="#{mailController.date}" />
+	</h:form>
+			<rich:panel id="mailConnected" styleClass="mailConnected"
+				rendered="#{mailController.connected}">
+				
+	<span class="mailTitle">Instant <h:outputText value="Mail"
+							style="color: #99CC00" /></span>
+					<br />
+		
+				<h:panelGrid columns="2">
+					<h:form>
+							  <a4j:poll execute="#{mailController.checkNewEmails()}" interval="30000" />
+						<rich:panel id="mailDirs" styleClass="mailFolders">
+							
+						
+							<rich:panelMenu style="border: none; overflow:auto height: 400px;">
+								<rich:menuItem label="New Message" render="mportletContent" action="#{mailController.setView(2)}"/>
+								<a4j:repeat value="#{mailController.folders()}" var="folder">
+									<rich:menuItem label="#{folder.split('__')[1]}"
+										action="#{mailController.readMessagesFromFolder(folder)}"
+										onclick="#{rich:component('loadingPanel')}.show();">
+
+									</rich:menuItem>
+								</a4j:repeat>
+							</rich:panelMenu>
+					<a4j:commandLink value="check new messages" execute="#{mailController.checkNewEmails()}" ></a4j:commandLink>
+						</rich:panel>
+					</h:form>
+
+
+					<a4j:outputPanel id="mportletContent">
+						<!-- ******************************************************************
+  NEW MESSAGE PANEL
+ 	****************************************************************** -->
+						<h:form>	<rich:panel id="newMessage" styleClass="mailNewMessage"
+							rendered="#{mailController.view==2}">
+						
+								<table>
+									<tr>
+										<td>From</td>
+										<td><rich:select
+												value="#{mailController.selectedAccounts}">
+												<f:selectItems value="#{mailController.accounts}"></f:selectItems>
+											</rich:select></td>
+									</tr>
+									<tr>
+										<td>For</td>
+										<td><h:inputTextarea value="#{mailController.recipients}"
+												style="width: 100% " /></td>
+									</tr>
+									<tr>
+										<td>Subject</td>
+
+										<td><h:inputText value="#{mailController.subject}"
+												style="width: 100% " /></td>
+									</tr>
+								</table>
+								<rich:editor width="100%" height="200px"
+									value="#{mailController.messageText}" toolbar="custom"
+									skin="kama">
+									<f:facet name="config">
+		toolbar_custom:
+                        [
+                            { name: 'document', items : [ 'NewPage','Preview' ] },
+                            { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
+                            { name: 'editing', items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
+                            { name: 'insert', items : [ 'Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'
+                                     ,'Iframe' ] },
+                                    '/',
+                            { name: 'styles', items : [ 'Styles','Format' ] },
+                            { name: 'basicstyles', items : [ 'Bold','Italic','Strike','-','RemoveFormat' ] },
+                            { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote' ] },
+                            { name: 'links', items : [ 'Link','Unlink','Anchor' ] },
+                            { name: 'tools', items : [ 'Maximize','-','About' ] }
+                        ]
+		</f:facet>
+								</rich:editor>
+
+								<h:commandButton value="Send" action="#{mailController.send()}" />
+							
+						</rich:panel>
+						</h:form>
+						<!-- ******************************************************************
+  MESSAGES LIST PANEL
+ 	****************************************************************** -->
+						<h:form><a4j:outputPanel id="messageListPanel">
+						<rich:panel id="messages" styleClass="mailList"
+							rendered="#{mailController.view==0}">
+							
+								<rich:dataTable id="mailList" rows="18" var="message"
+									value="#{mailController.folderMessages}"
+									rendered="#{mailController.folderMessages != null}"
+									style="width: 100%">
+
+									<rich:column width="10%">
+										<f:facet name="header">
+											<h:outputText value="At" />
+										</f:facet>
+										<a4j:commandLink value="" execute="#{mailController.starMessage(message)}" render="mailList">
+										<h:graphicImage value="images/star.png" rendered="#{messageDetails.isStar(message)}"/>
+										<h:graphicImage value="images/emptystar.png" rendered="#{!messageDetails.isStar(message)}"/>
+										</a4j:commandLink>
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Subject" />
+										</f:facet>
+										<a4j:commandLink execute="#{mailController.setActualMessage(message)}" render="mportletContent" styleClass="messageLink">
+										<div style="width: 100%; min-width:100px;">
+										<h:outputText value="#{message.subject}"
+											rendered="#{messageDetails.isSeen(message)}" />
+										<h:outputText value="#{message.subject}"
+											rendered="#{!messageDetails.isSeen(message)}"
+											styleClass="unreaded"  />
+										</div>	</a4j:commandLink>
+									</rich:column>
+
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="From" style="width: 500px" />
+										</f:facet>
+										<h:outputText value="#{messageDetails.getReciever(message)}"
+											rendered="#{messageDetails.isSeen(message)}" />
+										<h:outputText value="#{messageDetails.getReciever(message)}"
+											rendered="#{!messageDetails.isSeen(message)}"
+											styleClass="unreaded" />
+									</rich:column>
+
+									<rich:column sortBy="#{message.receivedDate}">
+										<f:facet name="header">
+											<h:outputText value="Date" />
+										</f:facet>
+										<h:outputText value="#{messageDetails.getDate(message)}"
+											rendered="#{messageDetails.isSeen(message)}" />
+										<h:outputText value="#{messageDetails.getDate(message)}"
+											rendered="#{!messageDetails.isSeen(message)}"
+											styleClass="unreaded" />
+									</rich:column>
+									<rich:column>
+									<f:facet name="header">
+									del
+									</f:facet>
+									<a4j:commandLink value="" execute="#{mailController.deleteMessage(message)}" >
+										<h:graphicImage value="images/remove-icon.png" />
+									</a4j:commandLink>
+									</rich:column>
+									<f:facet name="footer">
+										<rich:dataScroller id="scroller" maxPages="10"
+											style="background-color:white;" />
+									</f:facet>
+								</rich:dataTable>
+								
+    <rich:jQuery selector=".mailList tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
+    <rich:jQuery selector=".mailList tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />
+
+							
+						</rich:panel>
+						</a4j:outputPanel>
+						</h:form>
+<!-- ******************************************************************
+CONCRETE MESSAGE
+ 	****************************************************************** -->
+						<rich:panel id="concreteMessage" styleClass="concreteMessage" rendered="#{mailController.view==1}">
+						<h:form> 
+						<a4j:commandButton value="back" action="#{mailController.showList()}" render="mportletContent" />
+						
+						
+						<h2><h:outputText value="#{mailController.actualMessage.subject}" styleClass="subject" /></h2>
+							<h3>from:<h:outputText value="#{messageDetails.getReciever(mailController.actualMessage)}" /></h3>
+							<h:outputText value="#{messageDetails.getDate(mailController.actualMessage)}" />
+							<br />
+							
+							<rich:panel styleClass="mailBody">
+							Attachments:
+							<a4j:repeat var="at" value="#{messageDetails.getMessageAttachments(mailController.actualMessage)}">
+								<h:outputText value="#{at}; " style="font-size: 80%; color: #99CC00;"/>
+							</a4j:repeat>
+							<br />---------------------------------------<br/>
+							<h:outputText value="#{messageDetails.getMessageBody(mailController.actualMessage)}" escape="false" />
+							</rich:panel>
+							</h:form>
+						</rich:panel>
+					</a4j:outputPanel>
+					
+				</h:panelGrid>
+				<h:form>
+					<h:commandButton action="#{mailController.logout()}" value="logout" styleClass="button" />
+				</h:form>
+			</rich:panel>
+
+		
+		<rich:popupPanel id="loadingPanel" styleClass ="loadingPanel" modal="true" autosized="true"
+			resizeable="false">
+			<h:graphicImage value="images/loader.gif" />
+		</rich:popupPanel>
+</rich:panel>
+		
+	</h:body>
+
+</f:view>
