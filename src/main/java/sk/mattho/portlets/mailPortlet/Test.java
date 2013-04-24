@@ -14,8 +14,7 @@ public class Test {
 			 GenericMail mail= new GenericMail();
 			 mail.setImapPopServerUrl(m.getImapPopUrl());
 			 mail.setSmtpServerUrl(m.getSmtpUrl());
-			 mail.setUserName("mattho5@yahoo.com");
-			 mail.setPassword("mailportlet123***");
+			
 			 mail.setSSL(m.isSsl());
 			 mail.setSmtpPort(m.getSmtpPort());
 			 mail.setPomImapPort(m.getImapPort());
