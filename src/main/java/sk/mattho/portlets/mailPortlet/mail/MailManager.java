@@ -1,18 +1,24 @@
 package sk.mattho.portlets.mailPortlet.mail;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.FileDataSource;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Flags.Flag;
 import javax.mail.event.MailEvent;
+import javax.mail.util.ByteArrayDataSource;
 
-public class MailManager implements Serializable {
+import org.richfaces.model.UploadedFile;
+
+public class MailManager implements Serializable,MailMessageListener {
 
 	/**
 	 * List of connected mailboxes
@@ -53,7 +59,7 @@ public class MailManager implements Serializable {
 	public boolean addMailAccount(String userName,String password,MailConfigurations m,MailMessageListener listener) throws MessagingException{
 		
 		if(m!=MailConfigurations.OTHER){
-			 return addMailAccount(userName, password,m.getSmtpUrl(),m.getSmtpPort(), m.getImapPopUrl(), m.getImapPort(),m.isSsl(),listener);
+			 return addMailAccount(userName, password,m.getSmtpUrl(),m.getSmtpPort(), m.getImapUrl(), m.getImapPort(),m.isSecured(),m.isSsl(),listener);
 		}
 		return false;
 		
@@ -70,7 +76,7 @@ public class MailManager implements Serializable {
 	 * @return true if is connected otherwise false
 	 * @throws MessagingException
 	 */
-	public boolean addMailAccount(String userName,String password,String smtp,int smtpport, String imap,int imapport,boolean ssl,MailMessageListener listener) throws MessagingException{
+	public boolean addMailAccount(String userName,String password,String smtp,int smtpport, String imap,int imapport,boolean secured,boolean ssl,MailMessageListener listener) throws MessagingException{
 		
 		if(getMailAccount(userName)!=null)
 			return false;
@@ -82,12 +88,15 @@ public class MailManager implements Serializable {
 		mailbox.setImapPort(imapport);
 		mailbox.setUserName(userName);
 		mailbox.setPassword(password);
+		mailbox.setSecured(secured);
 		mailbox.setSSL(ssl);
 		
 	
 		if(mailbox.connect()){
+			System.out.println("connecting");
 			this.mailBoxList.add(mailbox);
 			this.folders.addAll(mailbox.getFolders());
+			mailbox.addMessageListener(this);
 			mailbox.addMessageListener(listener);
 			return true;
 		}
@@ -102,14 +111,19 @@ public class MailManager implements Serializable {
 	 * @param reciptiens - reciptient
 	 * @param account - name of account  for example user@account.com
 	 */
-	public void send(String message,String subject, String reciptiens, String account){
-	System.out.println("SENDING "+this.mailBoxList.size());
-
-	MailAccount m= this.getMailAccount(account);
-				m.sendMessage(reciptiens, message, subject);
-						
-	}
-
+	
+	public void send(String message,String subject, String reciptiens, String account,ByteArrayDataSource bds){
+		System.out.println("Sending from "+account);
+		
+	//	FileDataSource
+		//FileInputStream fs= new 
+		//ByteArrayDataSource bds=null;
+		
+		
+		MailAccount m= this.getMailAccount(account);
+					m.sendMessage(reciptiens, message, subject,bds);
+							
+		}
 	/**
 	 * This method search account in list of accounts
 	 * @param acc account name -- f.e user@example.com
@@ -118,9 +132,10 @@ public class MailManager implements Serializable {
 	public MailAccount getMailAccount(String acc){
 	
 		for(MailAccount m: this.mailBoxList){
-			if(m.getUserName().compareTo(acc)==0)
+			if(m.getUserName().compareTo(acc)==0){
 				System.out.print("ffind!");
 				return m;
+			}
 		}
 		return null;
 	}
@@ -143,6 +158,16 @@ public class MailManager implements Serializable {
 		this.mailBoxList.clear();
 	}
 	
+	public void disconnect(String mailAccount){
+		MailAccount m=getMailAccount(mailAccount);
+		if(m!=null){
+			m.disconnect();
+			this.folders.clear();
+			this.mailBoxList.remove(m);
+		}
+		for(MailAccount ma:this.mailBoxList)
+			this.folders.addAll(ma.getFolders());
+	}
 	//------------------------------------------------------------------------
 	//					GETTERS AND SETTERS
 	//------------------------------------------------------------------------
@@ -174,6 +199,8 @@ public class MailManager implements Serializable {
 		return temp;
 	}
 	
+
+		
 	
 	public void addMessageListener(MailMessageListener m){
 		for(MailAccount ml:this.mailBoxList)
@@ -187,11 +214,53 @@ public class MailManager implements Serializable {
 	
 	public void deleteMessage(Message m) throws MessagingException {
 		m.setFlag(Flag.DELETED, true);
-		
-		for(MailAccount ma:mailBoxList)
-			ma.initMessagesCount();
+		refreshMessagesCounts();
 		
 	}
+	
+	public void refreshMessagesCounts(){
+		for(MailAccount ma:mailBoxList)
+			ma.initMessagesCount();
+	}
+	public List<String> getFolderList(String accountName){
+		List<String> folders= new ArrayList<String>();
+		for(String f:this.folders){
+			if(f.contains(accountName))
+				folders.add(f);
+		}
+		return folders;
+	}
+	
+	public int getUnreadedMessageCount(String accountName){
+		MailAccount m=getMailAccount(accountName);
+		if(m!=null)
+			return m.getUnreadedMessages();
+		
+		return 0;
+	}
+
+	@Override
+	public void onIncomingMessage() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnect(MailAccount m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDisconnect(MailAccount m) {
+			this.mailBoxList.remove(m);
+			this.folders.clear();
+			for(MailAccount ma:this.mailBoxList)
+				this.folders.addAll(ma.getFolders());
+			
+		}
+		
+	
 	
 	
 }

@@ -8,19 +8,20 @@
 	background-image: none !important;
 }
 
-.rf-p {
+.rf-p , .rf-pp {
 	background-color: white !important;
+	border-radius: 5px;
+	
+	-moz-box-shadow: 2px 2px 2px #A0A0A0;
+	-webkit-box-shadow: 2px 2px 2px #A0A0A0;
+	box-shadow: 2px 2px 2px #A0A0A0;
 }
 
 .rf-dt-c {
 	border: none !important;
 	color: #404040;
 }
-.rf-dt-hdr, .rf-dt-hdr-c, .rf-dt-shdr{
-	background-color: white !important;
-	background-image: none !important;
-	color: red;
-}
+
 .rf-b{
 	background-color: red;
 }
@@ -82,8 +83,11 @@ color: black !important;
 }
 .wrapperMail .mailFolders {
 	background-color: white;
-	width: 130px;
+	width: 205px;
 	height:500px;
+	color: #404040;
+	border: none;
+	
 	
 	border-radius: 8px; -moz-box-shadow : 2px 2px 2px #A0A0A0;
 	-webkit-box-shadow: 2px 2px 2px #A0A0A0;
@@ -93,26 +97,44 @@ color: black !important;
 
 .wrapperMail .mailFoldersMenu {
 	border: none;
+	color: green! important;
 	border-radius: 7px;
 }
 
 .wrapperMail .mailNewMessage {
 	width: 100%;
-	height: 100%;
+	height: 500px;
 	background-color: white;
 	border-radius: 15px;
+	
 }
 
 
+.wrapperMail .newMessageButton{
+	
+	border-radius: 5px;
+	font-weight: bold;
+	
+	color: #404040 !important;
+	 -moz-box-shadow : 2px 2px 2px #A0A0A0;
+	-webkit-box-shadow: 2px 2px 2px #A0A0A0;
+	box-shadow: 2px 2px 2px #A0A0A0;
+	-moz-box-shadow: 2px 2px 2px #A0A0A0;
+}
 
 .wrapperMail .messageRow {
 	border: none;
 	background-color: white;
 	border-radius: 5px;
 }
+.messageRow:hover{
+	background-color: white;
+	color:red;
+}
 
 .wrapperMail .mailList {
 	background-color: white;
+	width: 700px;
 	height: 500px;
 	overflow: auto;
 	border-radius: 5px;
@@ -129,14 +151,14 @@ color: black !important;
 	width: 100%;
 }
 .concreteMessage .subject{
-	color:  #99CC00;
+	color:  green;
 }
 .concreteMessage .mailBody{
 	font-size: 110%;
 	background-color:#F5FFE0;
 	border-radius: 5px;
-	height: 370px;
-	width: 700px;
+	height: 350px;
+	width: 650px;
 	overflow: auto;
 	-webkit-box-shadow: 2px 2px 2px #A0A0A0;
 	box-shadow: 2px 2px 2px #A0A0A0;
@@ -147,12 +169,18 @@ color: black !important;
 	
 }
 .wrapperMail .unreaded{
-	color: #99CC00;
+	color:green;
 	font-weight: bold;
 }
 .wrapperMail a{
+
 	
-	color:  #99CC00;
+	color:  green;
+}
+.wrapperMail .menuGroup{
+	border-radius: 7px;
+	background-color: white !important;
+	backgrond-image: none !important;
 }
 .loadingPanel{
 	background-color:white !important;

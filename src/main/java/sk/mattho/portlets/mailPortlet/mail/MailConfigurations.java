@@ -1,33 +1,43 @@
 package sk.mattho.portlets.mailPortlet.mail;
 
 public enum MailConfigurations {
-	OTHER("","",993,465,false),
-	GMAIL("imap.gmail.com","smtp.gmail.com",993,587,false),
-	YAHOO("imap.mail.yahoo.com","smtp.mail.yahoo.com",993,465,true);
+	OTHER("","",993,465,false,false),
+	GMAIL("imap.gmail.com","smtp.gmail.com",993,465,true,true),
+	YAHOO("imap.mail.yahoo.com","smtp.mail.yahoo.com",993,465,true,true);
 	
-	private String imapPopUrl;
+	private String imapUrl;
 	private String smtpUrl;
 	private Integer imapPort;
 	private Integer smtpPort;
 	public static int DEFAULT_IMAP=993;
 	public static int DEFAULT_SMTP=465;
+	private boolean secured;
+	public boolean isSecured() {
+		return secured;
+	}
+
+	public void setSecured(boolean secured) {
+		this.secured = secured;
+	}
+
+	private boolean ssl; //true - ssl ; false - tls
 	
-	private boolean ssl;
 	
-	private MailConfigurations(String imap, String smtp, Integer imapPort,Integer smtpPort, boolean ssl){
-		this.imapPopUrl=imap;
+	private MailConfigurations(String imap, String smtp, Integer imapPort,Integer smtpPort, boolean secured,boolean ssl){
+		this.imapUrl=imap;
 		this.smtpUrl=smtp;
 		this.imapPort=imapPort;
 		this.smtpPort= smtpPort;
+		this.secured=secured;
 		this.ssl=ssl;
 	}
 
-	public String getImapPopUrl() {
-		return imapPopUrl;
+	public String getImapUrl() {
+		return imapUrl;
 	}
 
-	public void setImapPopUrl(String imapPopUrl) {
-		this.imapPopUrl = imapPopUrl;
+	public void setImapUrl(String imapPopUrl) {
+		this.imapUrl = imapPopUrl;
 	}
 
 	public String getSmtpUrl() {

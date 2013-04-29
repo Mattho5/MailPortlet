@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.activation.DataHandler;
 import javax.activation.MimeType;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -30,6 +31,8 @@ import javax.mail.internet.MimeMultipart;
 @Named
 @RequestScoped
 public class MessageDetails {
+	@Inject 
+	private MailController mc;
 
 	public boolean hasAttachment(Message m) {
 		// if(m.getFlags().contains(Flag.))
@@ -102,11 +105,11 @@ public class MessageDetails {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.mc.setError(true);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			this.mc.setError(true);
 		}
 
 		return res;
@@ -140,7 +143,7 @@ public class MessageDetails {
 	}
 
 	public List<String> getMessageAttachments(Message m) {
-
+	//	m.getFolder().getS
 		try {
 			List<String> attachments = new ArrayList<String>();
 			if (m.getContent() instanceof Multipart) {
@@ -187,6 +190,7 @@ public class MessageDetails {
 				if (disposition != null
 						&& (disposition.equalsIgnoreCase(BodyPart.ATTACHMENT))) {
 					DataHandler handler = b.getDataHandler();
+					//handler.getO
 					list.add(handler.getName());
 				}
 			}

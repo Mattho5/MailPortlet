@@ -13,12 +13,14 @@ import sk.mattho.portlets.mailPortlet.mail.MailConfigurations;
 public class Test {
 		 
 		 public static void main(String args[]) {
-			 MailConfigurations m= MailConfigurations.GMAIL;
+			 MailConfigurations m= MailConfigurations.YAHOO;
 			 MailAccount mail= new MailAccount();
-			 mail.setImapServerUrl(m.getImapPopUrl());
+			 mail.setImapServerUrl(m.getImapUrl());
 			 mail.setSmtpServerUrl(m.getSmtpUrl());
-	
+			 mail.setUserName("mattho5@yahoo.com");
+			 mail.setPassword("mailportlet123***");
 			 mail.setSSL(m.isSsl());
+			 mail.setSecured(m.isSecured());
 			 mail.setSmtpPort(m.getSmtpPort());
 			 mail.setImapPort(m.getImapPort());
 			
@@ -37,13 +39,13 @@ public class Test {
 			//	// TODO Auto-generated catch block
 			//	System.out.println("sprava"+ e.getMessage());
 			//}
-				List<String> folders=mail.getFolders();
-				for(String s:folders)
-					System.out.println(s);
+			//	List<String> folders=mail.getFolders();
+			//	for(String s:folders)
+				//	System.out.println(s);
 				
 	//		 mail.getFolders();
-	//	 mail.sendMessage("mattho5@yahoo.com", "<h2>TAK TOTO JE TESTOVACIA SPRAVA</h2>" +
-		//	 		"<p>what the <strong>fuck</strong> tertre</p>","test");
+		 mail.sendMessage("mattho5@yahoo.com", "<h2>TAK TOTO JE TESTOVACIA SPRAVA</h2>" +
+			 		"<p>what the <strong>fuck</strong> tertre</p>","test",null);
 			 mail.disconnect();
 			 
 		/* Properties props = System.getProperties();
@@ -121,9 +123,24 @@ public class Test {
 		 int c;
 //		            while ((c = is.read()) != -1)
 //		                System.out.write(c);
-		 }*/
 		 }
-		 
+			 /*
+			 
+			 AccountInfo a= new AccountInfo("fero","fero48",MailConfigurations.GMAIL);
+			 System.out.println(a);
+			 AccountInfo a2= new AccountInfo(a.toString());
+			 System.out.println(a2);
+			 
+			 PreferencesAccounts p= new PreferencesAccounts();
+			 p.addAccount(a2);
+			// p.addAccount(a);
+			 String s= p.getAccounts();
+			 System.out.println(s);
+			 PreferencesAccounts p2= new PreferencesAccounts(s);
+			System.out.println( p2.accounts().get(0).toString());
+		 }
+		 */
+}
 }
 
 		 

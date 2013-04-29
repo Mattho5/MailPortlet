@@ -16,6 +16,13 @@
  -->
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
     xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
-
-   Help Mode
+<h:outputStylesheet library="css" name="mail.css" />
+		
+   <span class="mailTitle">Instant <h:outputText value="Mail"
+							style="color: #99CC00" /></span>
+							
+					<br />
+					<h:outputText value="You are not singed in" rendered="#{!mailController.connected}"/>
+					<h:outputText value="HI" rendered="#{mailController.connected}"/>
+				
 </ui:composition>

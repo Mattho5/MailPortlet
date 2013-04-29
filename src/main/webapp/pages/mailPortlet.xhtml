@@ -22,7 +22,7 @@
 				<h:form id="loginForm"
 					rendered="#{mailController.connected == false}">
 					<span class="mailTitle">Instant <h:outputText value="Mail"
-							style="color: #99CC00" /></span>
+							style="color: green" /></span>
 					<br />
 
 
@@ -49,17 +49,62 @@
 						<a4j:outputPanel
 							rendered="#{mailController.selectedConfiguration == 'OTHER' }">
 							<tr>
-								<td><h:outputLabel value="Pop3 / IMAP server"
+								<td><h:outputLabel value="IMAP server"
 										for="popServer" /></td>
 								<td><h:inputText id="popServer"
-										value="#{mailController.imapPopUrl}" /></td>
+										value="#{mailController.imapUrl}" /></td>
+							</tr>
+							
+							<tr>
+								<td><h:outputLabel value="IMAP port"
+										for="popServer" /></td>
+								<td><h:inputText id="imapPort"
+										value="#{mailController.imapPort}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SMTP Server"
+										for="smtpServer" /></td>
+								<td><h:inputText id="smtpServer"
+										value="#{mailController.smtpUrl}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SMTP Port"
+										for="smtpPort" /></td>
+								<td><h:inputText id="smtpPort"
+										value="#{mailController.smtpPort}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Secured"
+										for="secured" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.secured}" id="secured"/> </td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SSL/TSL"
+										for="ssl" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.secured}" label="chcecked - SSL unchecked - TLS" id="ssl"/> </td>
 							</tr>
 						</a4j:outputPanel>
-
-					</table>
-					<h:commandButton value="Sign IN" type="submit" styleClass="button"
+<tr>
+								<td><h:outputLabel value="Save account"
+										for="save" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.saveAccount}" id="save" /> </td>
+							</tr>
+							<tr>
+								<td>
+								<h:commandButton value="Sign IN" type="submit" styleClass="button"
 						onclick="#{rich:component('loadingPanel')}.show();"
 						action="#{mailController.connect()}" />
+								</td>
+						
+						
+							<td>
+								<h:commandButton value="Load saved" type="submit" styleClass="button"
+						onclick="#{rich:component('loadingPanel')}.show();"
+						action="#{mailController.initFromPreferences()}" />
+						</td>
+						</tr>
+					</table>
+					
 					<rich:messages style="color:red" />
 
 					<h:graphicImage id="loadingImage" value="images/loader.gif"
@@ -71,34 +116,61 @@
 					address="#{mailController.userIdentifier}newmessage@mailService"
 					onerror="alert(event.rf.data)">
 					<a4j:ajax event="dataavailable" render="mailList" />
+						<a4j:ajax event="dataavailable" render="mailDirs" />
 				</a4j:push>
+				<a4j:push
+					address="#{mailController.userIdentifier}folderWindow@mailService"
+					onerror="alert(event.rf.data)">
+					
+						<a4j:ajax event="dataavailable" render="mailDirs" />
+				</a4j:push>
+			
 				
-				<h:outputText id="date" value="#{mailController.date}" />
+				
 	</h:form>
 			<rich:panel id="mailConnected" styleClass="mailConnected"
 				rendered="#{mailController.connected}">
 				
 	<span class="mailTitle">Instant <h:outputText value="Mail"
-							style="color: #99CC00" /></span>
+							style="color:green" /></span>
 					<br />
-		
+		<!-- ******************************************************************
+  LIST OF FOLDERS
+ 	****************************************************************** -->
 				<h:panelGrid columns="2">
+					
 					<h:form>
 							  <a4j:poll execute="#{mailController.checkNewEmails()}" interval="30000" />
 						<rich:panel id="mailDirs" styleClass="mailFolders">
 							
-						
-							<rich:panelMenu style="border: none; overflow:auto height: 400px;">
-								<rich:menuItem label="New Message" render="mportletContent" action="#{mailController.setView(2)}"/>
-								<a4j:repeat value="#{mailController.folders()}" var="folder">
+								<rich:menuItem label="New Message" render="mportletContent" action="#{mailController.setView(2)}" styleClass="newMessageButton"/>
+							<rich:panelMenu style="border: none; overflow:auto; height: 440px;">
+								<a4j:repeat value="#{mailController.accounts}" var="acc">
+								<rich:panelMenuGroup label="#{acc} (#{mailController.getUnreadedMessageCount(acc)})" expanded="true" styleClass="menuGroup">
+								<a4j:repeat value="#{mailController.getFolders(acc)}" var="folder">
 									<rich:menuItem label="#{folder.split('__')[1]}"
 										action="#{mailController.readMessagesFromFolder(folder)}"
 										onclick="#{rich:component('loadingPanel')}.show();">
 
 									</rich:menuItem>
 								</a4j:repeat>
+								</rich:panelMenuGroup>
+								</a4j:repeat>
 							</rich:panelMenu>
-					<a4j:commandLink value="check new messages" execute="#{mailController.checkNewEmails()}" ></a4j:commandLink>
+							<table>
+							<tr>
+							<td>
+					<a4j:commandLink value="check     messages     " execute="#{mailController.checkNewEmails()}" ></a4j:commandLink>
+					</td><td>
+					<a4j:commandButton  value ="Add" onclick="" styleClass="button" image="images/add.png" style="width:20px;" >
+						<rich:componentControl target="popup" operation="show" />
+						</a4j:commandButton>
+					<a4j:commandButton  value ="Add" onclick="" styleClass="button" action="#{mailController.messagesListRefresh()}" image="images/refresh.png" style="width:20px;" />
+					<h:commandButton action="#{mailController.logout()}" value="logout" styleClass="button" image="images/logout.png" style="width:20px;" />
+					</td>
+					</tr>
+					</table>
+				
 						</rich:panel>
 					</h:form>
 
@@ -129,8 +201,16 @@
 										<td><h:inputText value="#{mailController.subject}"
 												style="width: 100% " /></td>
 									</tr>
+									<tr>
+										<td>
+											Attachment
+										</td>
+										<td>
+										<a4j:commandButton value="Add Attachment" styleClass="button" onclick="#{rich:component('uploadFile')}.show();" />
+										</td>
+									</tr>
 								</table>
-								<rich:editor width="100%" height="200px"
+								<rich:editor width="100%" height="240px"
 									value="#{mailController.messageText}" toolbar="custom"
 									skin="kama">
 									<f:facet name="config">
@@ -151,10 +231,11 @@
 		</f:facet>
 								</rich:editor>
 
-								<h:commandButton value="Send" action="#{mailController.send()}" />
+								<h:commandButton value="Send" action="#{mailController.send()}" styleClass="button"/>
 							
 						</rich:panel>
 						</h:form>
+						
 						<!-- ******************************************************************
   MESSAGES LIST PANEL
  	****************************************************************** -->
@@ -162,7 +243,7 @@
 						<rich:panel id="messages" styleClass="mailList"
 							rendered="#{mailController.view==0}">
 							
-								<rich:dataTable id="mailList" rows="18" var="message"
+								<rich:dataTable id="mailList" rows="15" var="message"
 									value="#{mailController.folderMessages}"
 									rendered="#{mailController.folderMessages != null}"
 									style="width: 100%">
@@ -237,7 +318,8 @@ CONCRETE MESSAGE
  	****************************************************************** -->
 						<rich:panel id="concreteMessage" styleClass="concreteMessage" rendered="#{mailController.view==1}">
 						<h:form> 
-						<a4j:commandButton value="back" action="#{mailController.showList()}" render="mportletContent" />
+						<a4j:outputPanel rendered="#{!mailController.error}">
+						<a4j:commandButton value="back" action="#{mailController.showList()}" render="mportletContent" styleClass="button"/>
 						
 						
 						<h2><h:outputText value="#{mailController.actualMessage.subject}" styleClass="subject" /></h2>
@@ -246,21 +328,28 @@ CONCRETE MESSAGE
 							<br />
 							
 							<rich:panel styleClass="mailBody">
+							
+							<h:outputText value="#{messageDetails.getMessageBody(mailController.actualMessage)}" escape="false" />
+							<br />---------------------------------------<br/>
 							Attachments:
 							<a4j:repeat var="at" value="#{messageDetails.getMessageAttachments(mailController.actualMessage)}">
 								<h:outputText value="#{at}; " style="font-size: 80%; color: #99CC00;"/>
 							</a4j:repeat>
-							<br />---------------------------------------<br/>
-							<h:outputText value="#{messageDetails.getMessageBody(mailController.actualMessage)}" escape="false" />
+							
+							</rich:panel>
+							</a4j:outputPanel>
+							
+							<rich:panel rendered="#{mailController.error}" style="width:550px" styleClass="loginPanel" >
+								<h3>Connection problem!</h3><br/>
+								Please click <h:commandLink action="#{mailController.messagesListRefresh()}" value="here" /> for refreshing folder
+							
 							</rich:panel>
 							</h:form>
 						</rich:panel>
 					</a4j:outputPanel>
 					
 				</h:panelGrid>
-				<h:form>
-					<h:commandButton action="#{mailController.logout()}" value="logout" styleClass="button" />
-				</h:form>
+				
 			</rich:panel>
 
 		
@@ -270,6 +359,125 @@ CONCRETE MESSAGE
 		</rich:popupPanel>
 </rich:panel>
 		
+		<rich:popupPanel id="popup" modal="true" autosized="true"
+			resizeable="false">
+			<f:facet name="header">
+			<h:outputText value="ADD Account" />
+			<f:facet name="controls">
+				
+				
+				<h:form>
+				<a4j:commandButton  value="X" onclick="#{rich:component('popup')}.hide();" styleClass="button" />
+				</h:form>
+				</f:facet>
+				</f:facet>
+              <rich:panel header="Accounts">
+              <h:form>
+              <a4j:repeat value="#{mailController.accounts}" var="acc">
+              <h:outputText value="#{acc}" /> <h:commandLink value="disconnect" action="#{mailController.disconnect(acc)}" /> <br/>
+              
+              </a4j:repeat>
+              </h:form>
+              </rich:panel>
+               <rich:panel header="Stored accounts" id="storedAcc">
+              <h:form>
+              <a4j:repeat value="#{mailController.storedAccounts.accounts()}" var="acc">
+              <h:outputText value="#{acc.userName}" /> <h:commandLink value="delete" action="#{mailController.deleteAccount(acc)}" render="StoredAcc" /> <br/>
+              
+              </a4j:repeat>
+              </h:form>
+              </rich:panel>
+              <rich:panel id="addPanel" header="Add"> 
+          		<h:form id="loginPopupForm">
+					<table>
+						<tr>
+							<td><h:outputLabel value="User name" /></td>
+							<td><h:inputText value="#{mailController.userName}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Password" for="pass" /></td>
+							<td><h:inputSecret id="pass"
+									value="#{mailController.password}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Mail" for="mailSelect" /></td>
+							<td><rich:select id="mailSelect"
+									value="#{mailController.selectedConfiguration}">
+									<a4j:ajax event="selectitem" render="addPanel" />
+
+									<f:selectItems value="#{mailController.configurations}" />
+
+								</rich:select></td>
+						</tr>
+						<a4j:outputPanel
+							rendered="#{mailController.selectedConfiguration == 'OTHER' }">
+							<tr>
+								<td><h:outputLabel value="IMAP server"
+										for="popServer" /></td>
+								<td><h:inputText id="popServer"
+										value="#{mailController.imapUrl}" /></td>
+							</tr>
+							
+							<tr>
+								<td><h:outputLabel value="IMAP port"
+										for="popServer" /></td>
+								<td><h:inputText id="imapPort"
+										value="#{mailController.imapPort}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SMTP Server"
+										for="smtpServer" /></td>
+								<td><h:inputText id="smtpServer"
+										value="#{mailController.smtpUrl}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SMTP Port"
+										for="smtpPort" /></td>
+								<td><h:inputText id="smtpPort"
+										value="#{mailController.smtpPort}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Secured"
+										for="secured" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.secured}" id="secured"/> </td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="SSL/TSL"
+										for="ssl" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.secured}" label="chcecked - SSL unchecked - TLS" id="ssl"/> </td>
+							</tr>
+						</a4j:outputPanel>
+<tr>
+								<td><h:outputLabel value="Save account"
+										for="save" /></td>
+								<td><h:selectBooleanCheckbox value="#{mailController.saveAccount}" id="save" /> </td>
+							</tr>
+
+					</table>
+					<h:commandButton value="Add " styleClass="button"
+						
+						action="#{mailController.addNewAccount()}" onclick="#{rich:component('loadingPanel')}.show();"/>
+					<rich:messages style="color:red" />
+
+					<h:graphicImage id="loadingImage" value="images/loader.gif"
+						style="display:none; margin: auto;" />
+				</h:form>
+            </rich:panel>
+			
+		</rich:popupPanel>
+		
+		<rich:popupPanel id="uploadFile" modal="true" autosized="true">
+		<f:facet name="header">
+				<h:outputText value="ADD Account" />
+				
+				<h:form>
+				<a4j:commandButton  value="X" onclick="#{rich:component('uploadFile')}.hide();" styleClass="button" />
+				</h:form>
+				</f:facet>
+				<h:form>
+		<rich:fileUpload fileUploadListener="#{mailController.listener}"></rich:fileUpload>
+		</h:form>
+		</rich:popupPanel>
 	</h:body>
 
 </f:view>
