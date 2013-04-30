@@ -19,17 +19,17 @@ If you find some bugs (and I am really sure you will ;) ) leave comment or email
 
 User Guide
 ----------- 
-1. Connecting  
+1. Connecting   <br>
  You need to fill all nessesary fields for connecting. If "Save account" is checked, settings are stored into portlet preferences
 
 
-2. Sending emails
+2. Sending emails <br>
 For sending email click on "New message". If multiple accounts are used, pick the onefrom you want send email from. 
 
-3. Accounts managing 
+3. Accounts managing  <br>
 For managing connected and stored accounts click on "+" (Add) button. 
 
-4. Folder refresh 
+4. Folder refresh  <br>
 For current folder refresh click on refresh button.
 
 
