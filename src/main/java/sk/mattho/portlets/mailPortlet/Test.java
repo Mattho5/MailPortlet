@@ -17,8 +17,7 @@ public class Test {
 			 MailAccount mail= new MailAccount();
 			 mail.setImapServerUrl(m.getImapUrl());
 			 mail.setSmtpServerUrl(m.getSmtpUrl());
-			 mail.setUserName("mattho5@yahoo.com");
-			 mail.setPassword("mailportlet123***");
+			
 			 mail.setSSL(m.isSsl());
 			 mail.setSecured(m.isSecured());
 			 mail.setSmtpPort(m.getSmtpPort());
