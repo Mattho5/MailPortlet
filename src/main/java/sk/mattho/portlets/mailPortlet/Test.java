@@ -43,8 +43,8 @@ public class Test {
 				//	System.out.println(s);
 				
 	//		 mail.getFolders();
-		 mail.sendMessage("mattho5@yahoo.com", "<h2>TAK TOTO JE TESTOVACIA SPRAVA</h2>" +
-			 		"<p>what the <strong>fuck</strong> tertre</p>","test",null);
+		 mail.sendMessage("mattho5@yahoo.com", "<h2>Test Message</h2>" +
+			 		"<p>what the <strong>face</strong> </p>","test",null);
 			 mail.disconnect();
 			 
 		/* Properties props = System.getProperties();
